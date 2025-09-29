@@ -101,10 +101,15 @@
           output += `<div class="team"><strong>Team ${i+1}:</strong> ${team.join(", ")}</div>`;
         }
 
-        let leftovers = names.slice(numTeams * teamSize);
-        if (leftovers.length) {
-          output += `<div class="team"><strong>Leftover players:</strong> ${leftovers.join(", ")}</div>`;
-        }
+       let leftovers = names.slice(numTeams * teamSize);
+if (leftovers.length) {
+  leftovers.forEach(player => {
+    // pick a random team index
+    let randomTeamIndex = Math.floor(Math.random() * numTeams);
+    // append player to that team
+    teams[randomTeamIndex].push(player);
+  });
+}
       }
 
       document.getElementById("output").innerHTML = output;
