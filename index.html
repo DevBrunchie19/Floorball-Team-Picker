@@ -19,13 +19,16 @@
       color: #333;
       font-size: clamp(1.5rem, 5vw, 2rem);
     }
-    textarea, input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
+   textarea, input {
+  width: 95%;          /* narrower than the container */
+  display: block;      /* ensure margin auto works */
+  margin: 6px auto 12px auto; /* center horizontally */
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
     textarea {
     resize: none; /* 🚫 removes the size drag option */
       min-height: 100px;
