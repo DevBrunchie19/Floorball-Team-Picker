@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Floorball Team Picker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile scaling -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,6 +17,7 @@
     h1 {
       text-align: center;
       color: #333;
+      font-size: clamp(1.5rem, 5vw, 2rem);
     }
     textarea, input {
       width: 100%;
@@ -26,6 +28,7 @@
     }
     textarea {
     resize: none; /* 🚫 removes the size drag option */
+      min-height: 100px;
   }
     button {
       display: block;
