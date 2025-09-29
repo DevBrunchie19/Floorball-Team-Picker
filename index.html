@@ -65,10 +65,13 @@
   cursor: pointer;
   display: block;
   margin: 12px auto;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* drop shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth hover */
 }
 #generateBtn:hover {
   transform: scale(1.1);
   transition: 0.2s;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4); /* slightly bigger shadow on hover */
   /* animation: spin 2s linear infinite; */
 }
 
