@@ -103,12 +103,7 @@
 
        let leftovers = names.slice(numTeams * teamSize);
 if (leftovers.length) {
-  leftovers.forEach(player => {
-    // pick a random team index
-    let randomTeamIndex = Math.floor(Math.random() * numTeams);
-    // append player to that team
-    teams[randomTeamIndex].push(player);
-  });
+  output += `<div class="team"><strong>Leftover players:</strong> ${leftovers.join(", ")}</div>`;
 }
       }
 
