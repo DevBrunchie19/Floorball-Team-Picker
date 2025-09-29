@@ -69,6 +69,12 @@
 #generateBtn:hover {
   transform: rotate(360deg);  /* full rotation */
 }
+    #buttonText {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 6px;
+}
     .team {
       background: #fff;
       padding: 12px;
@@ -88,6 +94,7 @@
   <input type="number" id="teamSize" min="1" placeholder="e.g. 3">
 
   <button id="generateBtn" onclick="generateTeams()"></button>
+  <p id="buttonText">Click the floorball to generate teams</p>
 
   <h2>Teams:</h2>
   <div id="output"></div>
