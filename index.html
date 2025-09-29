@@ -51,22 +51,23 @@
   width: 90px;
   height: 90px;
   border-radius: 50%;           /* circle shape */
-  background: radial-gradient(circle at 20% 20%, white 7%, transparent 0),
-              radial-gradient(circle at 50% 50%, white 17%, transparent 0),
-              radial-gradient(circle at 80% 20%, white 7%, transparent 0),
-              radial-gradient(circle at 20% 80%, white 7%, transparent 0),
-              radial-gradient(circle at 80% 80%, white 6%, transparent 0),
-    radial-gradient(circle at 30% 30%, white 6%, transparent 0),
-    radial-gradient(circle at 70% 70%, white 6%, transparent 0),
-              #ba006f;           /* base floorball color */
+  background: radial-gradient(circle at 18% 20%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 50% 50%, #ddd 17%, transparent 0), 
+    radial-gradient(circle at 82% 20%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 18% 80%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 93% 50%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 7% 50%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 82% 80%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 80% 50%, #ddd 8%, transparent 0), 
+    radial-gradient(circle at 20% 50%, #ddd 8%, transparent 0), 
+    #fff           /* base floorball color */
   border: 2px solid #ccc;
   cursor: pointer;
   display: block;
   margin: 12px auto;
 }
 #generateBtn:hover {
-  transform: scale(1.1);
-  transition: 0.2s;
+  transform: rotate(360deg);  /* full rotation */
 }
     .team {
       background: #fff;
