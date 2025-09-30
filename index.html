@@ -51,10 +51,10 @@
       background: #ea189f;
     }*/
   .image-button {
-    display: block;
-  margin: 16px auto;
-  max-width: 60px;  /* limits how wide it can ever get */
-  height: auto;     /* keeps correct aspect ratio */
+  display: block;        /* makes margin auto work */
+  margin: 16px auto;     /* top/bottom 16px, auto left/right = centered */
+  max-width: 60px;       /* keeps it a nice icon size */
+  height: auto;          /* keeps aspect ratio */
   cursor: pointer;
   transition: transform 0.15s ease;
 }
