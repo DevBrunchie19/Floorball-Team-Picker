@@ -47,11 +47,11 @@
     button:hover {
       background: #ea189f;
     }*/
-   .image-button {
+  .image-button {
   display: block;
   margin: 16px auto;
-  width: 70px;   /* adjust size */
-  height: 70px;
+  max-width: 60px;  /* limits how wide it can ever get */
+  height: auto;     /* keeps correct aspect ratio */
   cursor: pointer;
   transition: transform 0.15s ease;
 }
