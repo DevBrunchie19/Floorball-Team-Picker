@@ -48,10 +48,10 @@
       background: #ea189f;
     }*/
   .image-button {
-   display: block;
+    display: block;
   margin: 16px auto;
-  width: 90%;   /* scales with screen size */
-  height: auto;
+  max-width: 60px;  /* limits how wide it can ever get */
+  height: auto;     /* keeps correct aspect ratio */
   cursor: pointer;
   transition: transform 0.15s ease;
 }
