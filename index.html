@@ -50,10 +50,14 @@
     button:hover {
       background: #ea189f;
     }*/
+    .button-wrapper {
+  display: flex;
+  justify-content: center; /* centers horizontally */
+}
   .image-button {
-  display: block;        /* makes margin auto work */
-  margin: 16px auto;     /* top/bottom 16px, auto left/right = centered */
-  max-width: 60px;       /* keeps it a nice icon size */
+  display: block;
+  margin: 0 auto;
+  max-width: 60px;
   height: auto;          /* keeps aspect ratio */
   cursor: pointer;
   transition: transform 0.15s ease;
@@ -103,8 +107,8 @@
   <label for="teamSize">Team size:</label>
   <input type="number" id="teamSize" min="1" placeholder="e.g. 3">
 
-  <div class="image-button" onclick="generateTeams()">
-  <img src="FBall_1.png" alt="Floorball">
+ <div class="button-wrapper">
+  <img src="FBall.jpg" alt="Generate Teams" class="image-button" onclick="generateTeams()">
 </div>
    <p id="buttonText">Click the floorball to generate teams</p>
 
