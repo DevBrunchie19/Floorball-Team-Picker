@@ -55,12 +55,12 @@
   justify-content: center; /* centers horizontally */
 }
   .image-button {
-    fill: #ba006f;
   display: block;
   margin: 0 auto;
   width: 60px;
   height: auto;
   cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(17%) sepia(90%) saturate(500%) hue-rotate(300deg) brightness(90%) contrast(100%);
   transition: transform 0.15s ease;
 }
 
@@ -111,7 +111,7 @@
   <input type="number" id="teamSize" min="1" placeholder="e.g. 3">
 
  <div class="button-wrapper">
-  <img src="Floorball_wht.svg" alt="Generate Teams" class="image-button" onclick="generateTeams()">
+  <img src="Floorball_Wht1.png" alt="Generate Teams" class="image-button" onclick="generateTeams()">
 </div>
    <p id="buttonText">Click the floorball to generate teams</p>
 
