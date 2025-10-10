@@ -116,45 +116,58 @@
   <h2>Teams:</h2>
   <div id="output"></div>
 
-  <script>
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+ <script>
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function generateTeams() {
+    let names = document.getElementById("names").value.split(",");
+    names = names.map(n => n.trim()).filter(n => n);
+    let teamSize = parseInt(document.getElementById("teamSize").value);
+
+    if (!teamSize || teamSize < 1) {
+      alert("Please enter a valid team size.");
+      return;
+    }
+
+    shuffle(names);
+
+    const teamNames = [
+      "Slapshot Sharks", "Floorball Falcons", "Stick Masters", "Goal Diggers",
+      "Rink Runners", "Puck Ninjas", "The Sweepers", "Ball Blazers",
+      "Stick Flickers", "The Mighty Dangles", "Net Breakers", "The Faceoff Crew",
+      "Floor Fury", "Puck Pirates", "Stick Storm", "Goal Crushers",
+      "Blade Brigade", "Turbo Turtles", "The Deflectors", "Shotcallers"
+    ];
+
+    shuffle(teamNames); // randomize team names too
+
+    let output = "";
+    let numTeams = Math.floor(names.length / teamSize);
+
+    if (numTeams === 0) {
+      output = "<p>Not enough players for the chosen team size.</p>";
+    } else {
+      for (let i = 0; i < numTeams; i++) {
+        let team = names.slice(i * teamSize, (i + 1) * teamSize);
+        // pick a random or unique team name
+        let teamName = teamNames[i % teamNames.length];
+        output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
+      }
+
+      let leftovers = names.slice(numTeams * teamSize);
+      if (leftovers.length) {
+        output += `<div class="team"><strong>Leftover players:</strong> ${leftovers.join(", ")}</div>`;
       }
     }
 
-    function generateTeams() {
-      let names = document.getElementById("names").value.split(",");
-      names = names.map(n => n.trim()).filter(n => n);
-      let teamSize = parseInt(document.getElementById("teamSize").value);
+    document.getElementById("output").innerHTML = output;
+  }
+</script>
 
-      if (!teamSize || teamSize < 1) {
-        alert("Please enter a valid team size.");
-        return;
-      }
-
-      shuffle(names);
-
-      let output = "";
-      let numTeams = Math.floor(names.length / teamSize);
-
-      if (numTeams === 0) {
-        output = "<p>Not enough players for the chosen team size.</p>";
-      } else {
-        for (let i = 0; i < numTeams; i++) {
-          let team = names.slice(i*teamSize, (i+1)*teamSize);
-          output += `<div class="team"><strong>Team ${i+1}:</strong> ${team.join(", ")}</div>`;
-        }
-
-       let leftovers = names.slice(numTeams * teamSize);
-if (leftovers.length) {
-  output += `<div class="team"><strong>Leftover players:</strong> ${leftovers.join(", ")}</div>`;
-}
-      }
-
-      document.getElementById("output").innerHTML = output;
-    }
-  </script>
 </body>
 </html>
