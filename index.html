@@ -86,7 +86,7 @@
     }
 
     #clearChipsBtn {
-      background: #3a52a3;
+      background: #ba006f;
       color: white;
       border: none;
       border-radius: 16px;
@@ -104,7 +104,7 @@
     }
 
     #clearChipsBtn:hover {
-      background: #516fd3;
+      background: #ea189f;
     }
 
     #clearChipsBtn:active {
@@ -137,12 +137,19 @@
       color: white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
+
+    /* --- Added team size chip styling --- */
+    .team-size-container {
+      display: flex;
+      gap: 8px;
+      margin: 6px 0 12px 0;
+    }
   </style>
 </head>
 <body>
   <h1>Floorball Team Picker</h1>
 
-  <!-- ✅ Added chips above textarea -->
+  <!-- ✅ Player chips section -->
   <div class="chips-header">
     <label>Select common players:</label>
     <button id="clearChipsBtn" type="button" onclick="clearAllPlayers()">Clear All</button>
@@ -152,7 +159,12 @@
   <label for="names">Enter player names (comma separated):</label>
   <textarea id="names" rows="5" placeholder="Brunchie, Eugene, ..."></textarea>
 
+  <!-- ✅ Team size chips + input -->
   <label for="teamSize">Team size:</label>
+  <div class="team-size-container">
+    <div class="chip" onclick="selectTeamSize(3, this)">3</div>
+    <div class="chip" onclick="selectTeamSize(5, this)">5</div>
+  </div>
   <input type="number" id="teamSize" min="1" placeholder="e.g. 3">
 
   <div class="button-wrapper">
@@ -184,14 +196,14 @@
       shuffle(names);
 
       const teamNames = [
-        "The Five-Hole Fiddlers", "Goal Diggers",
-        "Rink Runners", "The Sweepers", "Ball Blazers",
+        "Slapshot Tarts", "The Five-Hole Fiddlers", "The Floorgasms", "The Ball Busters", "Goal Diggers",
+        "Rink Runners", "The Cuck Bunnies", "The Sweepers", "Ball Blazers",
         "Stick Flickers", "The Mighty Dangles", "Deez Sticks", "The Faceoff Crew",
         "Floor Fury", "Stick Storm", "The Dirty Dekes",
-        "Stickflix and Chill", "The Deflectors", "Ballz Deep", "Just the Tip-Ins", "Balls of Fury", "The Slap and Tickles",
+        "Stickflix and Chill", "The Deflectors", "Balls to the Floor", "Ballz Deep", "Just the Tip-Ins", "Balls of Fury", "The Slap and Tickles",
       ];
 
-      shuffle(teamNames); // randomize team names too
+      shuffle(teamNames);
 
       let output = "";
       let numTeams = Math.floor(names.length / teamSize);
@@ -214,10 +226,10 @@
       document.getElementById("output").innerHTML = output;
     }
 
-    /* ✅ Added chip logic below */
+    /* ✅ Player chip logic */
     const commonPlayers = [
-      "Brunchie", "Eugene", "Colin B", "Nabber", "Ben", "Bill",
-      "Ron"
+      "Brunchie", "Eugene", "Tanya", "Kev", "Rex", "Mitch",
+      "Yasmin", "Connor", "Lauren", "Perry"
     ];
 
     function createPlayerChips() {
@@ -254,7 +266,7 @@
       document.querySelectorAll(".chip").forEach(chip => {
         if (names.includes(chip.textContent)) {
           chip.classList.add("selected");
-        } else {
+        } else if (!chip.closest('.team-size-container')) {
           chip.classList.remove("selected");
         }
       });
@@ -263,7 +275,7 @@
 
     function clearAllPlayers() {
       document.getElementById("names").value = "";
-      document.querySelectorAll(".chip").forEach(chip => chip.classList.remove("selected"));
+      document.querySelectorAll("#playerChips .chip").forEach(chip => chip.classList.remove("selected"));
       updateClearButtonVisibility();
     }
 
@@ -278,12 +290,34 @@
     generateTeams = function() {
       originalGenerateTeams();
       syncChipsWithTextarea();
+      syncTeamSizeChips();
     };
+
+    /* ✅ Team size chip logic */
+    function selectTeamSize(size, chip) {
+      document.getElementById("teamSize").value = size;
+      document.querySelectorAll(".team-size-container .chip").forEach(c => c.classList.remove("selected"));
+      chip.classList.add("selected");
+    }
+
+    function syncTeamSizeChips() {
+      const input = document.getElementById("teamSize");
+      const value = parseInt(input.value);
+      document.querySelectorAll(".team-size-container .chip").forEach(chip => {
+        if (parseInt(chip.textContent) === value) {
+          chip.classList.add("selected");
+        } else {
+          chip.classList.remove("selected");
+        }
+      });
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
       createPlayerChips();
       document.getElementById("names").addEventListener("input", syncChipsWithTextarea);
+      document.getElementById("teamSize").addEventListener("input", syncTeamSizeChips);
       updateClearButtonVisibility();
+      syncTeamSizeChips();
     });
   </script>
 </body>
