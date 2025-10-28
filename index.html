@@ -215,33 +215,33 @@
         output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
       }
 
-      // --- Updated leftover distribution ---
-      let leftovers = names.slice(numTeams * teamSize);
-      if (leftovers.length) {
-        // Parse the current output into team divs
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
-        const teamDivs = doc.querySelectorAll(".team");
+     // Distribute leftover players evenly across teams neatly
+let leftovers = names.slice(numTeams * teamSize);
+if (leftovers.length) {
+  // Parse the current output into team divs
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
+  const teamDivs = doc.querySelectorAll(".team");
 
-        leftovers.forEach((player, i) => {
-          const team = teamDivs[i % teamDivs.length];
-          if (team) {
-            const teamText = team.querySelector("strong").nextSibling;
-            if (teamText) {
-              team.querySelector("strong").insertAdjacentHTML("afterend", `, ${player} <em>(extra)</em>`);
-            } else {
-              team.querySelector("strong").insertAdjacentHTML("afterend", ` ${player} <em>(extra)</em>`);
-            }
-          }
-        });
-
-        // Clean up any trailing commas
-        teamDivs.forEach(team => {
-          team.innerHTML = team.innerHTML.replace(/,(\s*<\/div>)/, '$1');
-        });
-
-        output = doc.body.innerHTML;
+  leftovers.forEach((player, i) => {
+    const team = teamDivs[i % teamDivs.length];
+    if (team) {
+      const teamText = team.querySelector("strong").nextSibling;
+      if (teamText) {
+        team.querySelector("strong").insertAdjacentHTML("afterend", `, ${player}`);
+      } else {
+        team.querySelector("strong").insertAdjacentHTML("afterend", ` ${player}`);
       }
+    }
+  });
+
+  // Clean up any trailing commas
+  teamDivs.forEach(team => {
+    team.innerHTML = team.innerHTML.replace(/,(\s*<\/div>)/, '$1');
+  });
+
+  output = doc.body.innerHTML;
+}
     }
 
     document.getElementById("output").innerHTML = output;
