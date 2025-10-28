@@ -215,10 +215,9 @@
         output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
       }
 
-    // Distribute leftover players evenly across teams neatly
+   // Distribute leftover players evenly across teams at the end
 let leftovers = names.slice(numTeams * teamSize);
 if (leftovers.length) {
-  // Parse the current output into team divs
   const parser = new DOMParser();
   const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
   const teamDivs = doc.querySelectorAll(".team");
@@ -229,8 +228,8 @@ if (leftovers.length) {
       // Grab existing player list after the strong tag
       const strong = team.querySelector("strong");
       let existingText = strong.nextSibling ? strong.nextSibling.textContent.trim() : "";
-      
-      // Build new text with proper comma placement
+
+      // Append the player to the end
       if (existingText.length > 0) {
         strong.nextSibling.textContent = existingText + ", " + player;
       } else {
@@ -241,7 +240,6 @@ if (leftovers.length) {
 
   output = doc.body.innerHTML;
 }
-
     }
 
     document.getElementById("output").innerHTML = output;
