@@ -235,10 +235,7 @@ if (leftovers.length) {
     }
   });
 
-  // Clean up any trailing commas
-  teamDivs.forEach(team => {
-    team.innerHTML = team.innerHTML.replace(/,(\s*<\/div>)/, '$1');
-  });
+ 
 
   output = doc.body.innerHTML;
 }
