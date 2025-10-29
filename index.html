@@ -175,115 +175,34 @@
   <h2>Teams:</h2>
   <div id="output"></div>
 
-<!-- === Export & Share Toolbar === -->
-<div id="exportToolbar" style="
-  display: none;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-">
-  <button id="saveImageBtn" onclick="saveTeamsAsImage()" class="toolbar-btn" title="Save as Image">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M4 16v4h16v-4M12 12V4m0 8l3-3m-3 3L9 9" />
-    </svg>
-    Save as Image
-  </button>
+  <!-- === Export & Share Toolbar === -->
+  <div id="exportToolbar" style="
+    display: none;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  ">
+    <button id="saveImageBtn" onclick="saveTeamsAsImage()" class="toolbar-btn" title="Save as Image">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v4h16v-4M12 12V4m0 8l3-3m-3 3L9 9" />
+      </svg>
+      Save as Image
+    </button>
 
-  <button id="shareTeamsBtn" onclick="shareTeams()" class="toolbar-btn" title="Share Teams">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M4 12v7a1 1 0 001 1h3m10-8l4-4m0 0l-4-4m4 4H9m4 8h6a1 1 0 001-1V9" />
-    </svg>
-    Share Teams
-  </button>
-</div>
+    <button id="shareTeamsBtn" onclick="shareTeams()" class="toolbar-btn" title="Share Teams">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 12v7a1 1 0 001 1h3m10-8l4-4m0 0l-4-4m4 4H9m4 8h6a1 1 0 001-1V9" />
+      </svg>
+      Share Teams
+    </button>
+  </div>
 
-<!-- html2canvas (for Save as Image) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- html2canvas (for Save as Image) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<script>
-  /* === Toolbar Button Styling === */
-  const style = document.createElement("style");
-  style.textContent = `
-    .toolbar-btn {
-      background: #3a52a3;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-    .toolbar-btn:hover {
-      background: #516fd3;
-    }
-    .toolbar-btn:active {
-      transform: scale(0.96);
-    }
-    .icon {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2;
-    }
-  `;
-  document.head.appendChild(style);
-
-  /* === Save as Image === */
-  function saveTeamsAsImage() {
-    const output = document.getElementById("output");
-    if (!output.innerText.trim()) {
-      alert("No teams to save yet!");
-      return;
-    }
-
-    html2canvas(output, { backgroundColor: '#f9f9f9', scale: 2 }).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "floorball_teams.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    });
-  }
-
-  /* === Web Share API === */
-  function shareTeams() {
-    const output = document.getElementById("output").innerText.trim();
-    if (!output) {
-      alert("No teams to share yet!");
-      return;
-    }
-
-    if (navigator.share) {
-      navigator.share({
-        title: "Floorball Teams",
-        text: output,
-      }).catch(err => console.log("Share cancelled:", err));
-    } else {
-      alert("Sharing not supported on this device/browser. Try saving instead.");
-    }
-  }
-
-  /* === Show toolbar only after generating teams === */
-  const toolbar = document.getElementById("exportToolbar");
-  const originalGenerateTeams = generateTeams;
-  generateTeams = function() {
-    originalGenerateTeams();
-    syncChipsWithTextarea();
-    syncTeamSizeChips();
-    if (document.getElementById("output").innerText.trim()) {
-      toolbar.style.display = "flex";
-    } else {
-      toolbar.style.display = "none";
-    }
-  };
-</script>
-  
-  
  <script>
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -324,31 +243,27 @@
         output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
       }
 
-   // Distribute leftover players evenly across teams at the end
-let leftovers = names.slice(numTeams * teamSize);
-if (leftovers.length) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
-  const teamDivs = doc.querySelectorAll(".team");
+      // Distribute leftover players evenly across teams at the end
+      let leftovers = names.slice(numTeams * teamSize);
+      if (leftovers.length) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
+        const teamDivs = doc.querySelectorAll(".team");
 
-  leftovers.forEach((player, i) => {
-    const team = teamDivs[i % teamDivs.length];
-    if (team) {
-      // Grab existing player list after the strong tag
-      const strong = team.querySelector("strong");
-      let existingText = strong.nextSibling ? strong.nextSibling.textContent.trim() : "";
-
-      // Append the player to the end
-      if (existingText.length > 0) {
-        strong.nextSibling.textContent = existingText + ", " + player;
-      } else {
-        strong.insertAdjacentText("afterend", " " + player);
+        leftovers.forEach((player, i) => {
+          const team = teamDivs[i % teamDivs.length];
+          if (team) {
+            const strong = team.querySelector("strong");
+            let existingText = strong.nextSibling ? strong.nextSibling.textContent.trim() : "";
+            if (existingText.length > 0) {
+              strong.nextSibling.textContent = existingText + ", " + player;
+            } else {
+              strong.insertAdjacentText("afterend", " " + player);
+            }
+          }
+        });
+        output = doc.body.innerHTML;
       }
-    }
-  });
-
-  output = doc.body.innerHTML;
-}
     }
 
     document.getElementById("output").innerHTML = output;
@@ -419,6 +334,11 @@ if (leftovers.length) {
     originalGenerateTeams();
     syncChipsWithTextarea();
     syncTeamSizeChips();
+    if (document.getElementById("output").innerText.trim()) {
+      toolbar.style.display = "flex";
+    } else {
+      toolbar.style.display = "none";
+    }
   };
 
   /* Team size chip logic */
@@ -439,6 +359,72 @@ if (leftovers.length) {
       }
     });
   }
+
+  /* === Toolbar Button Styling === */
+  const style = document.createElement("style");
+  style.textContent = `
+    .toolbar-btn {
+      background: #3a52a3;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .toolbar-btn:hover {
+      background: #516fd3;
+    }
+    .toolbar-btn:active {
+      transform: scale(0.96);
+    }
+    .icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* === Save as Image === */
+  function saveTeamsAsImage() {
+    const output = document.getElementById("output");
+    if (!output.innerText.trim()) {
+      alert("No teams to save yet!");
+      return;
+    }
+
+    html2canvas(output, { backgroundColor: '#f9f9f9', scale: 2 }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "floorball_teams.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  }
+
+  /* === Web Share API === */
+  function shareTeams() {
+    const output = document.getElementById("output").innerText.trim();
+    if (!output) {
+      alert("No teams to share yet!");
+      return;
+    }
+
+    if (navigator.share) {
+      navigator.share({
+        title: "Floorball Teams",
+        text: output,
+      }).catch(err => console.log("Share cancelled:", err));
+    } else {
+      alert("Sharing not supported on this device/browser. Try saving instead.");
+    }
+  }
+
+  const toolbar = document.getElementById("exportToolbar");
 
   window.addEventListener("DOMContentLoaded", () => {
     createPlayerChips();
