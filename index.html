@@ -313,6 +313,17 @@
     return Array.from(document.querySelectorAll("#goalieChips .chip.selected")).map(c => c.textContent);
   }
 
+  function syncGoalieChips() {
+    const selectedGoalies = getSelectedGoalies();
+    document.querySelectorAll("#goalieChips .chip").forEach(chip => {
+      if (selectedGoalies.includes(chip.textContent)) {
+        chip.classList.add("selected");
+      } else {
+        chip.classList.remove("selected");
+      }
+    });
+  }
+
   function createPlayerChips() {
     const container = document.getElementById("playerChips");
     container.innerHTML = "";
@@ -371,6 +382,7 @@
   generateTeams = function() {
     originalGenerateTeams();
     syncChipsWithTextarea();
+    syncGoalieChips(); // ✅ keeps goalie chips visually selected
     syncTeamSizeChips();
     if (document.getElementById("output").innerText.trim()) {
       toolbar.style.display = "flex";
