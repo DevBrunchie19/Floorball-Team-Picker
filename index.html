@@ -313,14 +313,13 @@
     return Array.from(document.querySelectorAll("#goalieChips .chip.selected")).map(c => c.textContent);
   }
 
- function syncGoalieChips() {
-  document.querySelectorAll("#goalieChips .chip").forEach(chip => {
-    if (chip.classList.contains("selected")) {
-      chip.classList.add("selected");
-    }
-  });
-}
-
+  function syncGoalieChips() {
+    document.querySelectorAll("#goalieChips .chip").forEach(chip => {
+      if (chip.classList.contains("selected")) {
+        chip.classList.add("selected");
+      }
+    });
+  }
 
   function createPlayerChips() {
     const container = document.getElementById("playerChips");
@@ -350,13 +349,14 @@
     updateClearButtonVisibility();
   }
 
+  /* ✅ Updated: only touches player chips now */
   function syncChipsWithTextarea() {
     const textarea = document.getElementById("names");
     const names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
-    document.querySelectorAll(".chip").forEach(chip => {
+    document.querySelectorAll("#playerChips .chip").forEach(chip => {
       if (names.includes(chip.textContent)) {
         chip.classList.add("selected");
-      } else if (!chip.closest('.team-size-container')) {
+      } else {
         chip.classList.remove("selected");
       }
     });
