@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Floorball Team Picker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile scaling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -49,12 +49,8 @@
       filter: invert(29%) sepia(74%) saturate(488%) hue-rotate(189deg) brightness(100%) contrast(103%);
       transition: transform 0.15s ease;
     }
-    .image-button:hover {
-      transform: scale(1.1);
-    }
-    .image-button:active {
-      transform: scale(0.95);
-    }
+    .image-button:hover { transform: scale(1.1); }
+    .image-button:active { transform: scale(0.95); }
     #buttonText {
       text-align: center;
       font-size: 0.95rem;
@@ -68,23 +64,12 @@
       border-radius: 8px;
       border: 1px solid #ddd;
     }
-    #title-container {
-      text-align: center;
-    }
-    #title-container img {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 10px;
-    }
-
-    /* --- Added chip selector styling --- */
     .chips-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 6px;
     }
-
     #clearChipsBtn {
       background: #3a52a3;
       color: white;
@@ -97,27 +82,18 @@
       opacity: 0;
       pointer-events: none;
     }
-
     #clearChipsBtn.visible {
       opacity: 1;
       pointer-events: auto;
     }
-
-    #clearChipsBtn:hover {
-      background: #516fd3;
-    }
-
-    #clearChipsBtn:active {
-      transform: scale(0.95);
-    }
-
+    #clearChipsBtn:hover { background: #516fd3; }
+    #clearChipsBtn:active { transform: scale(0.95); }
     .chips-container {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin: 8px 0 12px 0;
     }
-
     .chip {
       padding: 8px 14px;
       background: #e0e0e0;
@@ -127,18 +103,12 @@
       transition: all 0.2s ease;
       user-select: none;
     }
-
-    .chip:hover {
-      background: #d0d0d0;
-    }
-
+    .chip:hover { background: #d0d0d0; }
     .chip.selected {
       background: #3a52a3;
       color: white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
-
-    /* --- Added team size chip styling --- */
     .team-size-container {
       display: flex;
       gap: 8px;
@@ -149,14 +119,12 @@
 <body>
   <h1>Floorball Team Picker</h1>
 
-  <!-- ✅ Player chips section -->
   <div class="chips-header">
     <label>The usual suspects:</label>
     <button id="clearChipsBtn" type="button" onclick="clearAllPlayers()">Clear All</button>
   </div>
   <div id="playerChips" class="chips-container"></div>
 
-  <!-- ✅ Goalie chips section -->
   <div class="chips-header">
     <label>Goalies:</label>
   </div>
@@ -165,7 +133,6 @@
   <label for="names">Enter additional players (comma separated):</label>
   <textarea id="names" rows="5" placeholder="Gretzky, McLovin, ..."></textarea>
 
-  <!-- ✅ Team size chips + input -->
   <label for="teamSize">Team size:</label>
   <div class="team-size-container">
     <div class="chip" onclick="selectTeamSize(3, this)">3</div>
@@ -181,32 +148,11 @@
   <h2>Teams:</h2>
   <div id="output"></div>
 
-  <!-- === Export & Share Toolbar === -->
-  <div id="exportToolbar" style="
-    display: none;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  ">
-    <button id="saveImageBtn" onclick="saveTeamsAsImage()" class="toolbar-btn" title="Save as Image">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 16v4h16v-4M12 12V4m0 8l3-3m-3 3L9 9" />
-      </svg>
-      Save as Image
-    </button>
-
-    <button id="shareTeamsBtn" onclick="shareTeams()" class="toolbar-btn" title="Share Teams">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 12v7a1 1 0 001 1h3m10-8l4-4m0 0l-4-4m4 4H9m4 8h6a1 1 0 001-1V9" />
-      </svg>
-      Share Teams
-    </button>
+  <div id="exportToolbar" style="display: none; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+    <button id="saveImageBtn" onclick="saveTeamsAsImage()" class="toolbar-btn">Save as Image</button>
+    <button id="shareTeamsBtn" onclick="shareTeams()" class="toolbar-btn">Share Teams</button>
   </div>
 
-  <!-- html2canvas (for Save as Image) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
  <script>
@@ -218,53 +164,41 @@
   }
 
   function generateTeams() {
-    let names = document.getElementById("names").value.split(",");
-    names = names.map(n => n.trim()).filter(n => n);
+    let names = document.getElementById("names").value.split(",").map(n => n.trim()).filter(n => n);
     let teamSize = parseInt(document.getElementById("teamSize").value);
-
     const selectedGoalies = getSelectedGoalies();
-
     if (!teamSize || teamSize < 1) {
       alert("Please enter a valid team size.");
       return;
     }
 
     shuffle(names);
-
     const teamNames = [
-      "The Five-Hole Fiddlers", "Goal Diggers",
-      "Ball Blazers", "Stick Flickers", "The Mighty Dangles", "Deez Sticks", 
-      "Floor Fury", "The Dirty Dekes", "Stickflix and Chill", "The Deflectors", "Ballz Deep", "Just the Tip-Ins", "The Slap and Tickles",
+      "The Five-Hole Fiddlers", "Goal Diggers", "Ball Blazers", "Stick Flickers", "The Mighty Dangles",
+      "Deez Sticks", "Floor Fury", "The Dirty Dekes", "Stickflix and Chill", "The Deflectors",
+      "Ballz Deep", "Just the Tip-Ins", "The Slap and Tickles",
     ];
-
     shuffle(teamNames);
 
     let output = "";
     let numTeams = Math.floor(names.length / teamSize);
-
     if (numTeams === 0) {
       output = "<p>Not enough players for the chosen team size.</p>";
     } else {
       for (let i = 0; i < numTeams; i++) {
         let team = names.slice(i * teamSize, (i + 1) * teamSize);
         let teamName = teamNames[i % teamNames.length];
-
-        // Assign a goalie to each team (rotate through selectedGoalies)
         if (selectedGoalies.length > 0) {
           const goalie = selectedGoalies[i % selectedGoalies.length];
           team.unshift(goalie + " (G)");
         }
-
         output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
       }
-
-      // Distribute leftover players evenly across teams at the end
       let leftovers = names.slice(numTeams * teamSize);
       if (leftovers.length) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
         const teamDivs = doc.querySelectorAll(".team");
-
         leftovers.forEach((player, i) => {
           const team = teamDivs[i % teamDivs.length];
           if (team) {
@@ -280,17 +214,10 @@
         output = doc.body.innerHTML;
       }
     }
-
     document.getElementById("output").innerHTML = output;
   }
 
-  /* Player chip logic */
-  const commonPlayers = [
-    "Brunchie", "Colin B", "Nabber", "Ben", "Bill", "Ron",
-    "Eugene"
-  ];
-
-  /* Goalie chip logic */
+  const commonPlayers = ["Brunchie", "Colin B", "Nabber", "Ben", "Bill", "Ron", "Eugene"];
   const goalies = ["Colin D", "Sam", "ClothGimp 1"];
 
   function createGoalieChips() {
@@ -315,9 +242,7 @@
 
   function syncGoalieChips() {
     document.querySelectorAll("#goalieChips .chip").forEach(chip => {
-      if (chip.classList.contains("selected")) {
-        chip.classList.add("selected");
-      }
+      if (chip.classList.contains("selected")) chip.classList.add("selected");
     });
   }
 
@@ -336,7 +261,6 @@
   function togglePlayer(name, chip) {
     const textarea = document.getElementById("names");
     let names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
-
     if (names.includes(name)) {
       names = names.filter(n => n !== name);
       chip.classList.remove("selected");
@@ -344,28 +268,25 @@
       names.push(name);
       chip.classList.add("selected");
     }
-
     textarea.value = names.join(", ");
     updateClearButtonVisibility();
   }
 
-  /* ✅ Updated: only touches player chips now */
   function syncChipsWithTextarea() {
     const textarea = document.getElementById("names");
     const names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
     document.querySelectorAll("#playerChips .chip").forEach(chip => {
-      if (names.includes(chip.textContent)) {
-        chip.classList.add("selected");
-      } else {
-        chip.classList.remove("selected");
-      }
+      if (names.includes(chip.textContent)) chip.classList.add("selected");
+      else chip.classList.remove("selected");
     });
     updateClearButtonVisibility();
   }
 
+  /* ✅ Clear all players AND goalies */
   function clearAllPlayers() {
     document.getElementById("names").value = "";
     document.querySelectorAll("#playerChips .chip").forEach(chip => chip.classList.remove("selected"));
+    document.querySelectorAll("#goalieChips .chip").forEach(chip => chip.classList.remove("selected"));
     updateClearButtonVisibility();
   }
 
@@ -380,16 +301,11 @@
   generateTeams = function() {
     originalGenerateTeams();
     syncChipsWithTextarea();
-    syncGoalieChips(); // ✅ keeps goalie chips visually selected
+    syncGoalieChips();
     syncTeamSizeChips();
-    if (document.getElementById("output").innerText.trim()) {
-      toolbar.style.display = "flex";
-    } else {
-      toolbar.style.display = "none";
-    }
+    toolbar.style.display = document.getElementById("output").innerText.trim() ? "flex" : "none";
   };
 
-  /* Team size chip logic */
   function selectTeamSize(size, chip) {
     document.getElementById("teamSize").value = size;
     document.querySelectorAll(".team-size-container .chip").forEach(c => c.classList.remove("selected"));
@@ -397,55 +313,19 @@
   }
 
   function syncTeamSizeChips() {
-    const input = document.getElementById("teamSize");
-    const value = parseInt(input.value);
+    const value = parseInt(document.getElementById("teamSize").value);
     document.querySelectorAll(".team-size-container .chip").forEach(chip => {
-      if (parseInt(chip.textContent) === value) {
-        chip.classList.add("selected");
-      } else {
-        chip.classList.remove("selected");
-      }
+      if (parseInt(chip.textContent) === value) chip.classList.add("selected");
+      else chip.classList.remove("selected");
     });
   }
 
-  /* === Toolbar Button Styling === */
-  const style = document.createElement("style");
-  style.textContent = `
-    .toolbar-btn {
-      background: #3a52a3;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-    .toolbar-btn:hover {
-      background: #516fd3;
-    }
-    .toolbar-btn:active {
-      transform: scale(0.96);
-    }
-    .icon {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2;
-    }
-  `;
-  document.head.appendChild(style);
-
-  /* === Save as Image === */
   function saveTeamsAsImage() {
     const output = document.getElementById("output");
     if (!output.innerText.trim()) {
       alert("No teams to save yet!");
       return;
     }
-
     html2canvas(output, { backgroundColor: '#f9f9f9', scale: 2 }).then(canvas => {
       const link = document.createElement("a");
       link.download = "floorball_teams.png";
@@ -454,19 +334,15 @@
     });
   }
 
-  /* === Web Share API === */
   function shareTeams() {
     const output = document.getElementById("output").innerText.trim();
     if (!output) {
       alert("No teams to share yet!");
       return;
     }
-
     if (navigator.share) {
-      navigator.share({
-        title: "Floorball Teams",
-        text: output,
-      }).catch(err => console.log("Share cancelled:", err));
+      navigator.share({ title: "Floorball Teams", text: output })
+        .catch(err => console.log("Share cancelled:", err));
     } else {
       alert("Sharing not supported on this device/browser. Try saving instead.");
     }
