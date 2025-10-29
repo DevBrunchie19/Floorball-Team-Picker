@@ -233,7 +233,20 @@
   }
 
   function toggleGoalie(name, chip) {
-    chip.classList.toggle("selected");
+    const textarea = document.getElementById("names");
+    let names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
+
+    const goalieName = name + " (G)";
+    if (chip.classList.contains("selected")) {
+      chip.classList.remove("selected");
+      names = names.filter(n => n !== goalieName);
+    } else {
+      chip.classList.add("selected");
+      names.push(goalieName);
+    }
+
+    textarea.value = names.join(", ");
+    updateClearButtonVisibility();
   }
 
   function getSelectedGoalies() {
@@ -241,8 +254,11 @@
   }
 
   function syncGoalieChips() {
+    const textareaNames = document.getElementById("names").value.split(",").map(n => n.trim());
     document.querySelectorAll("#goalieChips .chip").forEach(chip => {
-      if (chip.classList.contains("selected")) chip.classList.add("selected");
+      const goalieName = chip.textContent + " (G)";
+      if (textareaNames.includes(goalieName)) chip.classList.add("selected");
+      else chip.classList.remove("selected");
     });
   }
 
@@ -273,20 +289,18 @@
   }
 
   function syncChipsWithTextarea() {
-    const textarea = document.getElementById("names");
-    const names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
+    const names = document.getElementById("names").value.split(",").map(n => n.trim());
     document.querySelectorAll("#playerChips .chip").forEach(chip => {
       if (names.includes(chip.textContent)) chip.classList.add("selected");
       else chip.classList.remove("selected");
     });
+    syncGoalieChips();
     updateClearButtonVisibility();
   }
 
-  /* ✅ Clear all players AND goalies */
   function clearAllPlayers() {
     document.getElementById("names").value = "";
-    document.querySelectorAll("#playerChips .chip").forEach(chip => chip.classList.remove("selected"));
-    document.querySelectorAll("#goalieChips .chip").forEach(chip => chip.classList.remove("selected"));
+    document.querySelectorAll("#playerChips .chip, #goalieChips .chip").forEach(chip => chip.classList.remove("selected"));
     updateClearButtonVisibility();
   }
 
@@ -301,7 +315,6 @@
   generateTeams = function() {
     originalGenerateTeams();
     syncChipsWithTextarea();
-    syncGoalieChips();
     syncTeamSizeChips();
     toolbar.style.display = document.getElementById("output").innerText.trim() ? "flex" : "none";
   };
