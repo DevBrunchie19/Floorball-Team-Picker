@@ -1,456 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8">
+  <title>Floorball Team Picker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ErgoBot - Ergonomics Self-Check</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      padding: 10px;
-    }
-    #chatbox {
-      background: white;
       max-width: 600px;
-      margin: auto;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin: 40px auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .welcome {
-      background-color: #b91e71;
-      color: #fff;
-      text-align: left;
-    }
-    .message {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #dee2e6;
+    h1 {
+      padding: 12px;
+      background: #3a52a3;
+      text-align: center;
       border-radius: 8px;
+      color: #fff;
+      font-size: clamp(1.5rem, 5vw, 2rem);
     }
-    .bot {
-      background-color: #FCE8F2;
-      text-align: left;
-      margin-right: 10%;
+    textarea, input {
+      width: 100%;
+      display: block;
+      margin: 6px auto 12px auto;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
-    .user {
-      background-color: #e9ecef;
+    textarea {
+      resize: none;
+      min-height: 100px;
+    }
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+    .image-button {
+      display: block;
+      margin: 0 auto;
+      width: 85px;
+      height: auto;
+      cursor: pointer;
+      filter: invert(29%) sepia(74%) saturate(488%) hue-rotate(189deg) brightness(100%) contrast(103%);
+      transition: transform 0.15s ease;
+    }
+    .image-button:hover { transform: scale(1.1); }
+    .image-button:active { transform: scale(0.95); }
+    #buttonText {
       text-align: center;
-      margin-left: 50%;
-    }
-    .buttons {
+      font-size: 0.95rem;
+      color: #555;
       margin-top: 10px;
-      text-align: center;
     }
-    button {
-      padding: 8px 15px;
-      margin: 5px;
-      background-color: #b91e71;
+    .team {
+      background: #fff;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    .chips-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    #clearChipsBtn {
+      background: #3a52a3;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 16px;
+      padding: 6px 12px;
       cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease, transform 0.1s ease, opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
     }
-    .tip-image {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 5px;
+    #clearChipsBtn.visible {
+      opacity: 1;
+      pointer-events: auto;
     }
-    input, textarea {
-      width: 98%;
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+    #clearChipsBtn:hover { background: #516fd3; }
+    #clearChipsBtn:active { transform: scale(0.95); }
+    .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 12px 0;
     }
-    .typing {
-      font-style: italic;
-      color: gray;
-      margin: 5px;
-      animation: blink 1.5s infinite;
+    .chip {
+      padding: 8px 14px;
+      background: #e0e0e0;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      user-select: none;
     }
-    @keyframes blink {
-      50% { opacity: 0.3; }
+    .chip:hover { background: #d0d0d0; }
+    .chip.selected {
+      background: #3a52a3;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .team-size-container {
+      display: flex;
+      gap: 8px;
+      margin: 6px 0 12px 0;
     }
   </style>
 </head>
 <body>
-  <div id="userInfoForm" style="max-width:600px;margin:auto;background:white;padding:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);margin-bottom:20px;">
-    <h3 style="color:#b91e71;">Before we begin</h3>
-    <p>Please fill out your details:</p>
-    <input id="Name" placeholder="Your name">
-    <input id="Base/site" placeholder="Base/site">
-    <input id="Job title" placeholder="Job title">
-    <input id="Desk number (if appropriate)" placeholder="Desk number (if applicable)">
-    <button onclick="startAssessment()">Start Self-Check</button>
+  <h1>Floorball Team Picker</h1>
+
+  <div class="chips-header">
+    <label>The usual suspects:</label>
+    <button id="clearChipsBtn" type="button" onclick="clearAllPlayers()">Clear All</button>
+  </div>
+  <div id="playerChips" class="chips-container"></div>
+
+  <div class="chips-header">
+    <label>Goalies:</label>
+  </div>
+  <div id="goalieChips" class="chips-container"></div>
+
+  <label for="names">Enter additional players (comma separated):</label>
+  <textarea id="names" rows="5" placeholder="Gretzky, McLovin, ..."></textarea>
+
+  <label for="teamSize">Team size:</label>
+  <div class="team-size-container">
+    <div class="chip" onclick="selectTeamSize(3, this)">3</div>
+    <div class="chip" onclick="selectTeamSize(5, this)">5</div>
+  </div>
+  <input type="number" id="teamSize" min="1" placeholder="e.g. 3">
+
+  <div class="button-wrapper">
+    <img src="Floorball_Blk@2x.png" alt="Generate Teams" class="image-button" onclick="generateTeams()">
+  </div>
+  <p id="buttonText">Click the floorball to generate teams</p>
+
+  <h2>Teams:</h2>
+  <div id="output"></div>
+
+  <div id="exportToolbar" style="display: none; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+    <button id="saveImageBtn" onclick="saveTeamsAsImage()" class="toolbar-btn">Save as Image</button>
+    <button id="shareTeamsBtn" onclick="shareTeams()" class="toolbar-btn">Share Teams</button>
   </div>
 
-  <div id="chatbox">
-    <div class="message welcome" id="welcome">Hi! I'm <strong>ErgoBot</strong>. Let's go through a quick office ergonomics self-check.</div>
-    <div id="messages"></div>
-    <div id="controls" class="buttons"></div>
-  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  <script>
-    const messages = document.getElementById('messages');
-    const controls = document.getElementById('controls');
-    const welcomeMessage = document.getElementById('welcome');
-    document.getElementById('chatbox').style.display = 'none';
+ <script>
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
 
-    function formatHTMLtoText(html) {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = html;
-      const listItems = tempDiv.querySelectorAll("li");
-      listItems.forEach(li => {
-        li.textContent = `• ${li.textContent}`;
-      });
-      tempDiv.innerHTML = tempDiv.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-      return tempDiv.textContent || tempDiv.innerText || "";
+  function generateTeams() {
+    let names = document.getElementById("names").value.split(",").map(n => n.trim()).filter(n => n);
+    let teamSize = parseInt(document.getElementById("teamSize").value);
+    const selectedGoalies = getSelectedGoalies();
+    if (!teamSize || teamSize < 1) {
+      alert("Please enter a valid team size.");
+      return;
     }
 
-    const questions = [
-      {
-        text: "Can you find a comfortable keying position? (As seen in image below). You should sit upright and have room to rest your palms or wrists on the desk to provide support.",
-        tip: "Try pushing the display screen further back to create more room for the keyboard, hands and wrists. Users of thick, raised keyboards may need a wrist rest. <br>Or move the keyboard to allow adequate support for palm of hand on desk or space for wrist support.",
-        image: "Elbow ergo1.png"
-      },
-      {
-        text: "Do you have good keyboard technique? <br> You should avoid<ul><li>Having hands bent up at the wrist</li><li>Hitting the keys too hard</li><li>Overstretching the fingers</li></ul>",
-        tip: "<i>Need to write some suitable advice here.</i>",
-      },
-      {
-        text: "Are the characters on your keyboard clear and readable?",
-        tip: "Clean your keyboard using the wipes provided at workstations. If characters still can’t be read, the keyboard may need modifying or replacing. Use a keyboard with a matt finish to reduce glare and/or reflection.",
-        followUp: {
-          text: "Do you need a new keyboard?",
-          field: "newKeyboard"
-        }
-      },
-      {
-        text: "Is the mouse you use suitable for the tasks you do?",
-        tip: "Different shapes and sizes of mouse are available. Or, an alternative device such as a tablet may suit your task.",
-        followUp: {
-          text: "Do you need a different mouse or alternative device?",
-          field: "newMouse or alt device"
-        }
-      },
-      {
-        text: "Do you hold the mouse close to the keyboard as shown in the first picture? <br> Check you meet this guidance:<ul><li>Most devices are best placed as close as possible to the keyboard</li><li>Arm should not overreach</li><li>Users should not leave their hand on the device when not in use (hovering)</li><li>User should have a relaxed arm and straight wrist</li></ul>",
-        tip: "Adjust the way that you hold the mouse:<ul><li>Most devices are best placed as close as possible to the keyboard</li><li>Arm should not overreach</li><li>Users should not leave their hand on the device when not in use (hovering)</li><li>User should have a relaxed arm and straight wrist</li></ul>",
-        image: "Mouse hold.png"
-      },
-      {
-        text: "Can you find a comfortable working position while using the mouse? You should be able to support your arm and wrist using the desk surface or arm of chair?",
-        tip: "Mouse mats with built in wrist supports are available to you should you require one.",
-      },
-      {
-        text: "Does the mouse work smoothly at a speed that suits you?",
-        tip: "Clean the mouse. <br> <ul><li>A roller ball mouse collects desk debris and needs regular cleaning</li><li>A light operated mouse collects dust on the feet and in the light recess; they may also react differently on polished /matt surfaces</li></ul>",
-        followUp: {
-          text: "Do you require a replacement mouse?",
-          field: "newMouse"
-        }
-      },
-      {
-        text: "Placeholder for next question",
-        tip: "Placeholder for first stage help",
-        extraTip: "Placeholder for second stage help",
-      },
+    shuffle(names);
+    const teamNames = [
+      "The Five-Hole Fiddlers", "Goal Diggers", "Ball Blazers", "Stick Flickers", "The Mighty Dangles",
+      "Deez Sticks", "Floor Fury", "The Dirty Dekes", "Stickflix and Chill", "The Deflectors",
+      "Ballz Deep", "Just the Tip-Ins", "The Slap and Tickles",
     ];
+    shuffle(teamNames);
 
-    const positiveFeedback = [
-      "Great job!",
-      "Nice work keeping things ergonomic!",
-      "Awesome! Keep it up!",
-      "You're doing well, keep going!",
-      "I am in awe!"
-    ];
-
-    let currentQuestion = 0;
-    let userAnswers = [];
-    let userInfo = {};
-
-    async function showTyping(text = "", speed = 40) {
-      const typing = document.createElement('div');
-      typing.className = 'message bot typing';
-      typing.innerText = "ErgoBot is typing...";
-      messages.appendChild(typing);
-      messages.scrollTop = messages.scrollHeight;
-      const delay = Math.min(3000, Math.max(400, text.length * speed));
-      return new Promise(resolve => {
-        setTimeout(() => {
-          typing.remove();
-          resolve();
-        }, delay);
-      });
-    }
-
-    function appendMessage(text, sender, image = null) {
-      const msg = document.createElement('div');
-      msg.className = 'message ' + sender;
-      msg.innerHTML = text;
-      messages.appendChild(msg);
-      if (image) {
-        const img = document.createElement('img');
-        img.src = image;
-        img.alt = "Ergonomics Tip Image";
-        img.className = "tip-image";
-        messages.appendChild(img);
-      }
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function startAssessment() {
-      const nameField = document.getElementById('Name');
-      const baseField = document.getElementById('Base/site');
-      const jobField = document.getElementById('Job title');
-      const deskField = document.getElementById('Desk number (if appropriate)');
-      userInfo = {
-        name: nameField.value.trim(),
-        base: baseField.value.trim(),
-        job: jobField.value.trim(),
-        desk: deskField.value.trim()
-      };
-      [nameField, baseField, jobField].forEach(f => f.style.borderColor = '#ccc');
-      let missing = [];
-      if (!userInfo.name) missing.push(nameField);
-      if (!userInfo.base) missing.push(baseField);
-      if (!userInfo.job) missing.push(jobField);
-      if (missing.length > 0) {
-        missing.forEach(f => f.style.borderColor = 'red');
-        alert("⚠️ Please fill in all required fields before starting.");
-        return;
-      }
-      document.getElementById('userInfoForm').style.display = 'none';
-      document.getElementById('chatbox').style.display = 'block';
-      showQuestion();
-    }
-
-    async function showQuestion() {
-      messages.innerHTML = '';
-      controls.innerHTML = '';
-      if (currentQuestion < questions.length) {
-        const q = questions[currentQuestion];
-        await showTyping();
-        appendMessage(q.text, 'bot', q.image);
-        controls.innerHTML = `
-          <button onclick="handleAnswer(true)">Yes</button>
-          <button onclick="handleAnswer(false)">No</button>
-        `;
-      } else {
-        showSummary();
-      }
-    }
-
-    async function handleAnswer(isYes) {
-      const q = questions[currentQuestion];
-      controls.innerHTML = '';
-      appendMessage(isYes ? "Yes" : "No", 'user');
-      if (isYes) {
-        userAnswers.push({ question: q.text, answer: "Yes", tip: null, image: null, issue: null });
-        await showTyping();
-        const feedback = positiveFeedback[Math.floor(Math.random() * positiveFeedback.length)];
-        appendMessage(feedback, 'bot');
-        controls.innerHTML = `<button onclick="nextQuestion()">Next Question</button>`;
-      } else {
-        await showTyping();
-        appendMessage(q.tip, 'bot');
-        await showTyping();
-        appendMessage("Did this help solve the issue?", 'bot');
-        controls.innerHTML = `
-          <button onclick="handleTipHelp(true)">Yes</button>
-          <button onclick="handleTipHelp(false)">No</button>
-        `;
-      }
-    }
-
-    async function handleTipHelp(helped) {
-      const q = questions[currentQuestion];
-      controls.innerHTML = '';
-      appendMessage(helped ? "Yes" : "No", 'user');
-      if (helped) {
-        await showTyping();
-        appendMessage("Great! Glad that helped.", 'bot');
-        userAnswers.push({ question: q.text, answer: "No (but resolved)", tip: q.tip, image: q.image, issue: null });
-        controls.innerHTML = `<button onclick="nextQuestion()">Next Question</button>`;
-      } else {
-        if (q.extraTip) {
-          await showTyping();
-          appendMessage("Let's try one more thing:", 'bot');
-          await showTyping();
-          appendMessage(q.extraTip, 'bot');
-          await showTyping();
-          appendMessage("Did this help?", 'bot');
-          controls.innerHTML = `
-            <button onclick="handleExtraTipHelp(true)">Yes</button>
-            <button onclick="handleExtraTipHelp(false)">No</button>
-          `;
-        } else {
-          await askFollowUp(q);
+    let output = "";
+    let numTeams = Math.floor(names.length / teamSize);
+    if (numTeams === 0) {
+      output = "<p>Not enough players for the chosen team size.</p>";
+    } else {
+      for (let i = 0; i < numTeams; i++) {
+        let team = names.slice(i * teamSize, (i + 1) * teamSize);
+        let teamName = teamNames[i % teamNames.length];
+        if (selectedGoalies.length > 0) {
+          const goalie = selectedGoalies[i % selectedGoalies.length];
+          team.unshift(goalie + " (G)");
         }
+        output += `<div class="team"><strong>${teamName}:</strong> ${team.join(", ")}</div>`;
       }
-    }
-
-    async function handleExtraTipHelp(helped) {
-      const q = questions[currentQuestion];
-      controls.innerHTML = '';
-      appendMessage(helped ? "Yes" : "No", 'user');
-      if (helped) {
-        await showTyping();
-        appendMessage("Fantastic! Glad that worked.", 'bot');
-        userAnswers.push({
-          question: q.text,
-          answer: "No (resolved after extra step)",
-          tip: q.extraTip,
-          image: q.image,
-          issue: null
+      let leftovers = names.slice(numTeams * teamSize);
+      if (leftovers.length) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(`<div>${output}</div>`, "text/html");
+        const teamDivs = doc.querySelectorAll(".team");
+        leftovers.forEach((player, i) => {
+          const team = teamDivs[i % teamDivs.length];
+          if (team) {
+            const strong = team.querySelector("strong");
+            let existingText = strong.nextSibling ? strong.nextSibling.textContent.trim() : "";
+            if (existingText.length > 0) {
+              strong.nextSibling.textContent = existingText + ", " + player;
+            } else {
+              strong.insertAdjacentText("afterend", " " + player);
+            }
+          }
         });
-        controls.innerHTML = `<button onclick="nextQuestion()">Next Question</button>`;
-      } else {
-        await askFollowUp(q);
+        output = doc.body.innerHTML;
       }
     }
+    document.getElementById("output").innerHTML = output;
+  }
 
-    async function askFollowUp(q) {
-      if (!q.followUp) {
-        await askForIssue(q);
-        return;
-      }
-      await showTyping();
-      appendMessage(q.followUp.text, 'bot');
-      controls.innerHTML = `
-        <button onclick="handleFollowUpAnswer(true)">Yes</button>
-        <button onclick="handleFollowUpAnswer(false)">No</button>
-      `;
+  const commonPlayers = ["Brunchie", "Colin W-B", "Nabber", "Ben", "Bill", "Ron", "Eugene"];
+  const goalies = ["Colin D", "Sam", "ClothGimp"];
+
+  function createGoalieChips() {
+    const container = document.getElementById("goalieChips");
+    container.innerHTML = "";
+    goalies.forEach(name => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = name;
+      chip.onclick = () => toggleGoalie(name, chip);
+      container.appendChild(chip);
+    });
+  }
+
+  function toggleGoalie(name, chip) {
+    chip.classList.toggle("selected");
+  }
+
+  function getSelectedGoalies() {
+    return Array.from(document.querySelectorAll("#goalieChips .chip.selected")).map(c => c.textContent);
+  }
+
+  function syncGoalieChips() {
+    document.querySelectorAll("#goalieChips .chip").forEach(chip => {
+      if (chip.classList.contains("selected")) chip.classList.add("selected");
+    });
+  }
+
+  function createPlayerChips() {
+    const container = document.getElementById("playerChips");
+    container.innerHTML = "";
+    commonPlayers.forEach(name => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = name;
+      chip.onclick = () => togglePlayer(name, chip);
+      container.appendChild(chip);
+    });
+  }
+
+  function togglePlayer(name, chip) {
+    const textarea = document.getElementById("names");
+    let names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
+    if (names.includes(name)) {
+      names = names.filter(n => n !== name);
+      chip.classList.remove("selected");
+    } else {
+      names.push(name);
+      chip.classList.add("selected");
     }
+    textarea.value = names.join(", ");
+    updateClearButtonVisibility();
+  }
 
-    async function handleFollowUpAnswer(needsNewItem) {
-      const q = questions[currentQuestion];
-      appendMessage(needsNewItem ? "Yes" : "No", 'user');
-      controls.innerHTML = '';
-      await showTyping();
-      if (needsNewItem) {
-        appendMessage("Okay, this will be noted in your report so a replacement can be arranged.", 'bot');
-        userAnswers.push({
-          question: q.text,
-          answer: "No (unresolved)",
-          tip: q.extraTip || q.tip,
-          image: q.image,
-          issue: `User indicated they need a new ${q.followUp.field.replace('new', '').toLowerCase()}.`
-        });
-        controls.innerHTML = `<button onclick="nextQuestion()">Next Question</button>`;
-      } else {
-        appendMessage("Got it, we'll just note that no replacement is needed.", 'bot');
-        await showTyping();
-        await askForIssue(q);
-      }
+  function syncChipsWithTextarea() {
+    const textarea = document.getElementById("names");
+    const names = textarea.value.split(",").map(n => n.trim()).filter(n => n);
+    document.querySelectorAll("#playerChips .chip").forEach(chip => {
+      if (names.includes(chip.textContent)) chip.classList.add("selected");
+      else chip.classList.remove("selected");
+    });
+    updateClearButtonVisibility();
+  }
+
+  /* ✅ Clear all players AND goalies */
+  function clearAllPlayers() {
+    document.getElementById("names").value = "";
+    document.querySelectorAll("#playerChips .chip").forEach(chip => chip.classList.remove("selected"));
+    document.querySelectorAll("#goalieChips .chip").forEach(chip => chip.classList.remove("selected"));
+    updateClearButtonVisibility();
+  }
+
+  function updateClearButtonVisibility() {
+    const textarea = document.getElementById("names");
+    const btn = document.getElementById("clearChipsBtn");
+    const hasPlayers = textarea.value.trim().length > 0;
+    btn.classList.toggle("visible", hasPlayers);
+  }
+
+  const originalGenerateTeams = generateTeams;
+  generateTeams = function() {
+    originalGenerateTeams();
+    syncChipsWithTextarea();
+    syncGoalieChips();
+    syncTeamSizeChips();
+    toolbar.style.display = document.getElementById("output").innerText.trim() ? "flex" : "none";
+  };
+
+  function selectTeamSize(size, chip) {
+    document.getElementById("teamSize").value = size;
+    document.querySelectorAll(".team-size-container .chip").forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+  }
+
+  function syncTeamSizeChips() {
+    const value = parseInt(document.getElementById("teamSize").value);
+    document.querySelectorAll(".team-size-container .chip").forEach(chip => {
+      if (parseInt(chip.textContent) === value) chip.classList.add("selected");
+      else chip.classList.remove("selected");
+    });
+  }
+
+  function saveTeamsAsImage() {
+    const output = document.getElementById("output");
+    if (!output.innerText.trim()) {
+      alert("No teams to save yet!");
+      return;
     }
+    html2canvas(output, { backgroundColor: '#f9f9f9', scale: 2 }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "floorball_teams.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  }
 
-    async function askForIssue(q) {
-      await showTyping();
-      appendMessage("Please describe the issue so we can follow up:", 'bot');
-      const textarea = document.createElement('textarea');
-      textarea.placeholder = "Type here...";
-      textarea.rows = 3;
-      controls.appendChild(textarea);
-      const submitBtn = document.createElement('button');
-      submitBtn.textContent = "Submit Issue";
-      submitBtn.onclick = async () => {
-        const issueText = textarea.value.trim();
-        if (!issueText) {
-          alert("Please enter a brief description before continuing.");
-          return;
-        }
-        appendMessage(issueText, 'user');
-        await showTyping();
-        appendMessage("Thanks for sharing, your description will be included in your report.", 'bot');
-        userAnswers.push({
-          question: q.text,
-          answer: "No (unresolved)",
-          tip: q.extraTip || q.tip,
-          image: q.image,
-          issue: issueText
-        });
-        controls.innerHTML = `<button onclick="nextQuestion()">Next Question</button>`;
-      };
-      controls.appendChild(submitBtn);
+  function shareTeams() {
+    const output = document.getElementById("output").innerText.trim();
+    if (!output) {
+      alert("No teams to share yet!");
+      return;
     }
-
-    function nextQuestion() {
-      currentQuestion++;
-      showQuestion();
+    if (navigator.share) {
+      navigator.share({ title: "Floorball Teams", text: output })
+        .catch(err => console.log("Share cancelled:", err));
+    } else {
+      alert("Sharing not supported on this device/browser. Try saving instead.");
     }
+  }
 
-    async function showSummary() {
-      messages.innerHTML = '';
-      welcomeMessage.innerHTML = "Well done on completing the self-check!";
-      await showTyping();
-      appendMessage("Here's a summary of your responses:", 'bot');
-      userAnswers.forEach(entry => {
-        appendMessage(entry.question, 'bot');
-        appendMessage(entry.answer, 'user');
-        if (entry.tip) appendMessage(entry.tip, 'bot');
-        if (entry.issue) appendMessage("User note: " + entry.issue, 'user');
-      });
-      controls.innerHTML = `
-        <button onclick="downloadPDF()">Download Your Summary</button>
-      `;
-    }
+  const toolbar = document.getElementById("exportToolbar");
 
-  
-
-    function addPageHeader(doc, userInfo) {
-      const margin = 20;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      doc.setFontSize(10);
-      doc.setTextColor(150, 150, 150);
-      doc.text(`ErgoBot Self-Check for ${userInfo.name}`, margin, 10);
-      doc.line(margin, 12, pageWidth - margin, 12);
-    }
-
-    function addTextBlock(doc, textLines, margin, y, maxWidth, lineHeight = 6) {
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const availableHeight = pageHeight - 30; // leave space for footer
-      for (let i = 0; i < textLines.length; i++) {
-        if (y + lineHeight > availableHeight) {
-          doc.addPage();
-          addPageHeader(doc, userInfo);
-          y = 25;
-        }
-        doc.text(textLines[i], margin, y);
-        y += lineHeight;
-      }
-      return y;
-    }
-
-    async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ compress: true });
-      doc.setProperties({
-        title: `ErgoBot Self-Check - ${userInfo.name}`,
-        author: userInfo.name || "ErgoBot"
-      });
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      const maxWidth = pageWidth - margin * 2;
-      let y = 25;
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.setTextColor(185, 30, 113);
-      doc.text("ErgoBot Self-Check Summary", margin, y);
-      y += 10;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      const details = [
-        `Name: ${userInfo.name}`,
-        `Base: ${userInfo.base}`,
-        `Job title: ${user
- </script>
+  window.addEventListener("DOMContentLoaded", () => {
+    createPlayerChips();
+    createGoalieChips();
+    document.getElementById("names").addEventListener("input", syncChipsWithTextarea);
+    document.getElementById("teamSize").addEventListener("input", syncTeamSizeChips);
+    updateClearButtonVisibility();
+    syncTeamSizeChips();
+  });
+</script>
 </body>
 </html>
